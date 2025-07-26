@@ -1,193 +1,52 @@
--- KN HUB v2 - Feito por GPT e KN 🟪 (com Slider e botão Fechar/Abrir)
+-- KN HUB • 日本風 🔮 -- Interface completa com tema roxo, abas "Auto Click" e "Créditos", auto-farm com delay ajustável, slider, samurai no fundo e transparência.
 
-local player = game.Players.LocalPlayer
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.Name = "KNHub"
-gui.ResetOnSpawn = false
+-- Proteção para evitar duplicatas if getgenv().KNHubInitialized then return end getgenv().KNHubInitialized = true
 
--- Variáveis globais
-getgenv().autoPushEnabled = false
-getgenv().repDelay = 0.05
+-- Variáveis globais getgenv().AutoClickEnabled = false getgenv().ClickDelay = 0.05
 
--- 🟣 Botão para REABRIR a interface
-local reopenBtn = Instance.new("TextButton", gui)
-reopenBtn.Size = UDim2.new(0, 120, 0, 30)
-reopenBtn.Position = UDim2.new(0, 10, 0, 10)
-reopenBtn.Text = "Abrir KN Hub"
-reopenBtn.Visible = false
-reopenBtn.BackgroundColor3 = Color3.fromRGB(120, 80, 180)
-reopenBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-reopenBtn.Font = Enum.Font.SourceSansBold
-reopenBtn.TextScaled = true
+-- Função de animação RGB local function animateStrokeColor(stroke) coroutine.wrap(function() while stroke and stroke.Parent do local t = tick() local r = math.sin(t) * 127 + 128 local g = math.sin(t + 2) * 127 + 128 local b = math.sin(t + 4) * 127 + 128 stroke.Color = Color3.fromRGB(r, g, b) wait(0.05) end end)() end
 
--- 🪟 Janela principal
-local mainFrame = Instance.new("Frame", gui)
-mainFrame.Size = UDim2.new(0, 480, 0, 320)
-mainFrame.Position = UDim2.new(0.5, -240, 0.5, -160)
-mainFrame.BackgroundColor3 = Color3.fromRGB(50, 20, 70)
-mainFrame.BorderSizePixel = 0
-mainFrame.Active = true
-mainFrame.Draggable = true
+-- Criar GUI local player = game.Players.LocalPlayer local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui")) gui.Name = "KNHubUI" gui.ResetOnSpawn = false
 
--- ❌ Botão de fechar
-local closeBtn = Instance.new("TextButton", mainFrame)
-closeBtn.Size = UDim2.new(0, 30, 0, 30)
-closeBtn.Position = UDim2.new(1, -35, 0, 5)
-closeBtn.Text = "X"
-closeBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 100)
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeBtn.Font = Enum.Font.SourceSansBold
-closeBtn.TextScaled = true
+-- Frame principal local mainFrame = Instance.new("Frame", gui) mainFrame.Size = UDim2.new(0, 400, 0, 350) mainFrame.Position = UDim2.new(0.5, -200, 0.5, -175) mainFrame.BackgroundColor3 = Color3.fromRGB(60, 0, 90) mainFrame.BorderSizePixel = 0 mainFrame.Active = true mainFrame.Draggable = true mainFrame.BackgroundTransparency = 0.2
 
-closeBtn.MouseButton1Click:Connect(function()
-	mainFrame.Visible = false
-	reopenBtn.Visible = true
-end)
+local mainStroke = Instance.new("UIStroke", mainFrame) mainStroke.Thickness = 2 mainStroke.Transparency = 0.2 animateStrokeColor(mainStroke)
 
-reopenBtn.MouseButton1Click:Connect(function()
-	mainFrame.Visible = true
-	reopenBtn.Visible = false
-end)
+-- Samurai de fundo local samuraiImage = Instance.new("ImageLabel", mainFrame) samuraiImage.Size = UDim2.new(1, 0, 1, 0) samuraiImage.Position = UDim2.new(0, 0, 0, 0) samuraiImage.Image = "rbxassetid://14245947392" -- ID de exemplo samuraiImage.ImageTransparency = 0.7 samuraiImage.BackgroundTransparency = 1 samuraiImage.ImageColor3 = Color3.fromRGB(255, 60, 60) samuraiImage.ScaleType = Enum.ScaleType.Fit samuraiImage.ZIndex = 0
 
--- 🟪 Menu lateral
-local sideMenu = Instance.new("Frame", mainFrame)
-sideMenu.Size = UDim2.new(0, 120, 1, 0)
-sideMenu.BackgroundColor3 = Color3.fromRGB(70, 30, 90)
+-- Título local title = Instance.new("TextLabel", mainFrame) title.Size = UDim2.new(1, 0, 0, 40) title.Position = UDim2.new(0, 0, 0, 0) title.BackgroundColor3 = Color3.fromRGB(90, 50, 130) title.Text = "🔮 KN HUB • 日本風 🔮" title.TextColor3 = Color3.fromRGB(255, 220, 255) title.Font = Enum.Font.Fantasy title.TextScaled = true title.BackgroundTransparency = 0.2 title.ZIndex = 2
 
--- 🔮 Conteúdo
-local contentFrame = Instance.new("Frame", mainFrame)
-contentFrame.Size = UDim2.new(1, -120, 1, 0)
-contentFrame.Position = UDim2.new(0, 120, 0, 0)
-contentFrame.BackgroundColor3 = Color3.fromRGB(90, 40, 120)
+-- Botão de fechar local closeBtn = Instance.new("TextButton", mainFrame) closeBtn.Size = UDim2.new(0, 30, 0, 30) closeBtn.Position = UDim2.new(1, -35, 0, 5) closeBtn.Text = "X" closeBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0) closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255) closeBtn.ZIndex = 3
 
--- 🔘 Menu buttons
-local function createMenuButton(text, posY)
-	local btn = Instance.new("TextButton", sideMenu)
-	btn.Size = UDim2.new(1, 0, 0, 40)
-	btn.Position = UDim2.new(0, 0, 0, posY)
-	btn.BackgroundColor3 = Color3.fromRGB(120, 60, 160)
-	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	btn.Font = Enum.Font.SourceSansBold
-	btn.TextScaled = true
-	btn.Text = text
-	return btn
+closeBtn.MouseButton1Click:Connect(function() mainFrame.Visible = false end)
+
+-- Botão de reabrir local openBtn = Instance.new("TextButton", gui) openBtn.Size = UDim2.new(0, 100, 0, 40) openBtn.Position = UDim2.new(0, 20, 0, 20) openBtn.Text = "Abrir KN Hub" openBtn.BackgroundColor3 = Color3.fromRGB(90, 0, 120) openBtn.TextColor3 = Color3.fromRGB(255, 255, 255) openBtn.Visible = true
+
+openBtn.MouseButton1Click:Connect(function() mainFrame.Visible = true end)
+
+-- Menus laterais e abas local sideMenu = Instance.new("Frame", mainFrame) sideMenu.Size = UDim2.new(0, 140, 1, -40) sideMenu.Position = UDim2.new(0, 0, 0, 40) sideMenu.BackgroundColor3 = Color3.fromRGB(80, 0, 130) sideMenu.BackgroundTransparency = 0.25 sideMenu.ZIndex = 2
+
+local sideStroke = Instance.new("UIStroke", sideMenu) sideStroke.Thickness = 2 sideStroke.Transparency = 0.2 animateStrokeColor(sideStroke)
+
+local contentFrame = Instance.new("Frame", mainFrame) contentFrame.Size = UDim2.new(1, -140, 1, -40) contentFrame.Position = UDim2.new(0, 140, 0, 40) contentFrame.BackgroundColor3 = Color3.fromRGB(70, 0, 100) contentFrame.BackgroundTransparency = 0.25 contentFrame.ZIndex = 2
+
+local contentStroke = Instance.new("UIStroke", contentFrame) contentStroke.Thickness = 2 contentStroke.Transparency = 0.2 animateStrokeColor(contentStroke)
+
+-- Função para criar botão de menu local function createMenuButton(name, yOffset) local btn = Instance.new("TextButton", sideMenu) btn.Size = UDim2.new(1, -10, 0, 40) btn.Position = UDim2.new(0, 5, 0, yOffset) btn.Text = name btn.BackgroundColor3 = Color3.fromRGB(120, 60, 160) btn.TextColor3 = Color3.fromRGB(255, 255, 255) btn.Font = Enum.Font.SourceSansBold btn.TextScaled = true btn.BackgroundTransparency = 0.15
+
+local btnStroke = Instance.new("UIStroke", btn)
+btnStroke.Thickness = 1.5
+btnStroke.Transparency = 0.2
+animateStrokeColor(btnStroke)
+
+return btn
+
 end
 
-local pushupTabBtn = createMenuButton("PushUps", 10)
-local creditTabBtn = createMenuButton("Créditos", 60)
+-- Abas local autoClickTabBtn = createMenuButton("🌐 Auto Click", 10) local creditTabBtn = createMenuButton("🏣 Créditos", 60)
 
--- 🧱 Abas
-local pushupTab = Instance.new("Frame", contentFrame)
-pushupTab.Size = UDim2.new(1, 0, 1, 0)
-pushupTab.Visible = false
-pushupTab.BackgroundTransparency = 1
+-- Conteúdos das abas local autoClickTab = Instance.new("Frame", contentFrame) autoClickTab.Size = UDim2.new(1, 0, 1, 0) autoClickTab.BackgroundTransparency = 1
 
-local creditTab = Instance.new("Frame", contentFrame)
-creditTab.Size = UDim2.new(1, 0, 1, 0)
-creditTab.Visible = false
-creditTab.BackgroundTransparency = 1
+local toggleBtn = Instance.new("TextButton", autoClickTab) toggleBtn.Size = UDim2.new(0, 200, 0, 50) toggleBtn.Position = UDim2.new(0.5, -100, 0.2, 0) toggleBtn.Text = "🌐 Ativar Auto Click" toggleBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 200) toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255) toggleBtn.Font = Enum.Font.SourceSansBold toggleBtn.TextScaled = true
 
--- 🔄 Função auto-farm
-local function autoPushLoop()
-	while getgenv().autoPushEnabled do
-		pcall(function()
-			local args = { "rep" }
-			player:WaitForChild("muscleEvent"):FireServer(unpack(args))
-		end)
-		task.wait(getgenv().repDelay)
-	end
-end
 
--- ▶️ Botão toggle
-local toggleBtn = Instance.new("TextButton", pushupTab)
-toggleBtn.Size = UDim2.new(0, 200, 0, 50)
-toggleBtn.Position = UDim2.new(0.5, -100, 0.1, 0)
-toggleBtn.Text = "Ativar Auto PushUps"
-toggleBtn.BackgroundColor3 = Color3.fromRGB(140, 70, 200)
-toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleBtn.Font = Enum.Font.SourceSansBold
-toggleBtn.TextScaled = true
-
-toggleBtn.MouseButton1Click:Connect(function()
-	getgenv().autoPushEnabled = not getgenv().autoPushEnabled
-	if getgenv().autoPushEnabled then
-		toggleBtn.Text = "Desativar Auto PushUps"
-		spawn(autoPushLoop)
-	else
-		toggleBtn.Text = "Ativar Auto PushUps"
-	end
-end)
-
--- 🎚️ Slider
-local sliderLabel = Instance.new("TextLabel", pushupTab)
-sliderLabel.Size = UDim2.new(0, 200, 0, 30)
-sliderLabel.Position = UDim2.new(0.5, -100, 0.3, 0)
-sliderLabel.Text = "Delay: 0.05s"
-sliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-sliderLabel.Font = Enum.Font.SourceSans
-sliderLabel.TextScaled = true
-sliderLabel.BackgroundTransparency = 1
-
-local sliderBar = Instance.new("Frame", pushupTab)
-sliderBar.Size = UDim2.new(0, 200, 0, 8)
-sliderBar.Position = UDim2.new(0.5, -100, 0.4, 0)
-sliderBar.BackgroundColor3 = Color3.fromRGB(150, 100, 200)
-
-local sliderKnob = Instance.new("Frame", sliderBar)
-sliderKnob.Size = UDim2.new(0, 10, 1, 0)
-sliderKnob.Position = UDim2.new((getgenv().repDelay - 0.01) / 0.49, 0, 0, 0)
-sliderKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-
-local dragging = false
-sliderKnob.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-	end
-end)
-sliderKnob.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = false
-	end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-	if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-		local rel = input.Position.X - sliderBar.AbsolutePosition.X
-		local percent = math.clamp(rel / sliderBar.AbsoluteSize.X, 0, 1)
-		getgenv().repDelay = 0.01 + (0.49 * percent)
-		sliderLabel.Text = string.format("Delay: %.2fs", getgenv().repDelay)
-		sliderKnob.Position = UDim2.new(percent, -5, 0, 0)
-	end
-end)
-
--- 🖋 Créditos
-local creditLabel = Instance.new("TextLabel", creditTab)
-creditLabel.Size = UDim2.new(1, 0, 0, 40)
-creditLabel.Position = UDim2.new(0, 0, 0.4, 0)
-creditLabel.Text = "KN HUB - Feito por GPT e KN 💜"
-creditLabel.BackgroundTransparency = 1
-creditLabel.TextColor3 = Color3.fromRGB(255, 200, 255)
-creditLabel.Font = Enum.Font.SourceSansBold
-creditLabel.TextScaled = true
-
--- Alternar abas
-local function showTab(tabName)
-	pushupTab.Visible = false
-	creditTab.Visible = false
-	if tabName == "PushUps" then
-		pushupTab.Visible = true
-	elseif tabName == "Créditos" then
-		creditTab.Visible = true
-	end
-end
-
-pushupTabBtn.MouseButton1Click:Connect(function()
-	showTab("PushUps")
-end)
-
-creditTabBtn.MouseButton1Click:Connect(function()
-	showTab("Créditos")
-end)
-
--- Mostrar PushUps por padrão
-showTab("PushUps")
