@@ -1,136 +1,104 @@
--- ✅ AUTO FARM COMPLETO + ANTI AFK + UI
+-- KN HUB feito por GPT e KN 😎🔥 (Versão Roxa)
 
--- Variáveis globais
-if getgenv().RepFarmRunning == nil then
-    getgenv().RepFarmRunning = false
-    getgenv().RepFarmDelay = 0.2
-    getgenv().RepFarmCount = 0
-end
-
-local Players = game:GetService("Players")
-local UIS = game:GetService("UserInputService")
-local RunService = game:GetService("RunService")
-local VIM = game:GetService("VirtualInputManager")
-local player = Players.LocalPlayer
-local muscleEvent = player:WaitForChild("muscleEvent")
-
--- GUI Setup
+local player = game.Players.LocalPlayer
 local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
-gui.Name = "AutoFarmUI"
+gui.Name = "KNHub"
 gui.ResetOnSpawn = false
 
--- Botão principal
-local toggleButton = Instance.new("TextButton", gui)
-toggleButton.Size = UDim2.new(0, 200, 0, 50)
-toggleButton.Position = UDim2.new(0.5, -100, 0.5, -120)
-toggleButton.Text = "Ativar Auto Farm"
-toggleButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggleButton.TextScaled = true
-toggleButton.Font = Enum.Font.SourceSansBold
+-- 🟪 Janela principal (dragável)
+local mainFrame = Instance.new("Frame", gui)
+mainFrame.Size = UDim2.new(0, 450, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
+mainFrame.BackgroundColor3 = Color3.fromRGB(50, 20, 70)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
 
--- Slider Frame
-local sliderFrame = Instance.new("Frame", gui)
-sliderFrame.Size = UDim2.new(0, 200, 0, 40)
-sliderFrame.Position = UDim2.new(0.5, -100, 0.5, -60)
-sliderFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+-- 🟣 Menu lateral
+local sideMenu = Instance.new("Frame", mainFrame)
+sideMenu.Size = UDim2.new(0, 120, 1, 0)
+sideMenu.Position = UDim2.new(0, 0, 0, 0)
+sideMenu.BackgroundColor3 = Color3.fromRGB(70, 30, 90)
 
-local sliderBar = Instance.new("Frame", sliderFrame)
-sliderBar.Size = UDim2.new(1, 0, 0.3, 0)
-sliderBar.Position = UDim2.new(0, 0, 0.35, 0)
-sliderBar.BackgroundColor3 = Color3.fromRGB(120, 120, 120)
+-- 🔮 Área de conteúdo
+local contentFrame = Instance.new("Frame", mainFrame)
+contentFrame.Size = UDim2.new(1, -120, 1, 0)
+contentFrame.Position = UDim2.new(0, 120, 0, 0)
+contentFrame.BackgroundColor3 = Color3.fromRGB(90, 40, 120)
 
-local sliderKnob = Instance.new("TextButton", sliderBar)
-sliderKnob.Size = UDim2.new(0, 20, 1, 0)
-sliderKnob.Position = UDim2.new(0.2, -10, 0, 0)
-sliderKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
-sliderKnob.Text = ""
-
-local sliderLabel = Instance.new("TextLabel", sliderFrame)
-sliderLabel.Size = UDim2.new(1, 0, 1, 0)
-sliderLabel.Position = UDim2.new(0, 0, -1, 0)
-sliderLabel.Text = "Delay: 0.2s"
-sliderLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-sliderLabel.BackgroundTransparency = 1
-sliderLabel.TextScaled = true
-sliderLabel.Font = Enum.Font.SourceSansBold
-
--- Contador
-local counterLabel = Instance.new("TextLabel", gui)
-counterLabel.Size = UDim2.new(0, 200, 0, 40)
-counterLabel.Position = UDim2.new(0.5, -100, 0.5, 10)
-counterLabel.Text = "Reps: 0"
-counterLabel.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-counterLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-counterLabel.TextScaled = true
-counterLabel.Font = Enum.Font.SourceSansBold
-
--- Anti-AFK
-spawn(function()
-    while true do
-        wait(60) -- a cada 60 segundos
-        VIM:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-        VIM:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
-    end
-end)
-
--- Auto Farm Loop
-local function toggleAutoFarm()
-    getgenv().RepFarmRunning = not getgenv().RepFarmRunning
-
-    if getgenv().RepFarmRunning then
-        toggleButton.Text = "Parar Auto Farm"
-        toggleButton.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
-
-        spawn(function()
-            while getgenv().RepFarmRunning do
-                pcall(function()
-                    muscleEvent:FireServer("rep")
-                    getgenv().RepFarmCount += 1
-                    counterLabel.Text = "Reps: " .. tostring(getgenv().RepFarmCount)
-                end)
-                wait(getgenv().RepFarmDelay)
-            end
-        end)
-    else
-        toggleButton.Text = "Ativar Auto Farm"
-        toggleButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
-    end
+-- 🔘 Botões do menu
+local function createMenuButton(text, posY)
+	local btn = Instance.new("TextButton", sideMenu)
+	btn.Size = UDim2.new(1, 0, 0, 40)
+	btn.Position = UDim2.new(0, 0, 0, posY)
+	btn.BackgroundColor3 = Color3.fromRGB(120, 60, 160)
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.Font = Enum.Font.SourceSansBold
+	btn.TextScaled = true
+	btn.Text = text
+	return btn
 end
 
--- Clique no botão
-toggleButton.MouseButton1Click:Connect(toggleAutoFarm)
+local pushupTabBtn = createMenuButton("PushUps", 10)
+local creditTabBtn = createMenuButton("Créditos", 60)
 
--- Tecla de atalho ("R")
-UIS.InputBegan:Connect(function(input, gpe)
-    if not gpe and input.KeyCode == Enum.KeyCode.R then
-        toggleAutoFarm()
-    end
+-- 🔧 Aba: PushUps
+local pushupTab = Instance.new("Frame", contentFrame)
+pushupTab.Size = UDim2.new(1, 0, 1, 0)
+pushupTab.Visible = true
+pushupTab.BackgroundTransparency = 1
+
+local pushButton = Instance.new("TextButton", pushupTab)
+pushButton.Size = UDim2.new(0, 200, 0, 50)
+pushButton.Position = UDim2.new(0.5, -100, 0.5, -25)
+pushButton.BackgroundColor3 = Color3.fromRGB(170, 100, 255)
+pushButton.Text = "Ativar PushUp Auto"
+pushButton.TextColor3 = Color3.fromRGB(20, 0, 40)
+pushButton.Font = Enum.Font.SourceSansBold
+pushButton.TextScaled = true
+
+local doingPush = false
+pushButton.MouseButton1Click:Connect(function()
+	doingPush = not doingPush
+	pushButton.Text = doingPush and "Parar Auto PushUp" or "Ativar PushUp Auto"
+	if doingPush then
+		spawn(function()
+			while doingPush do
+				pcall(function()
+					game:GetService("Players").LocalPlayer:WaitForChild("muscleEvent"):FireServer("pushup")
+				end)
+				wait(0.3)
+			end
+		end)
+	end
 end)
 
--- Slider arrastável
-local dragging = false
-sliderKnob.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-    end
-end)
-UIS.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-    end
+-- ✨ Aba: Créditos
+local creditTab = Instance.new("Frame", contentFrame)
+creditTab.Size = UDim2.new(1, 0, 1, 0)
+creditTab.Visible = false
+creditTab.BackgroundTransparency = 1
+
+local creditText = Instance.new("TextLabel", creditTab)
+creditText.Size = UDim2.new(1, -40, 0, 50)
+creditText.Position = UDim2.new(0, 20, 0.4, 0)
+creditText.BackgroundTransparency = 1
+creditText.Text = "KN HUB - Feito por GPT e KN 😎🔥"
+creditText.TextColor3 = Color3.fromRGB(255, 200, 255)
+creditText.Font = Enum.Font.SourceSansBold
+creditText.TextScaled = true
+
+-- 🧭 Alternar abas
+local function showTab(tab)
+	pushupTab.Visible = false
+	creditTab.Visible = false
+	tab.Visible = true
+end
+
+pushupTabBtn.MouseButton1Click:Connect(function()
+	showTab(pushupTab)
 end)
 
-RunService.RenderStepped:Connect(function()
-    if dragging then
-        local mouseX = UIS:GetMouseLocation().X
-        local barX = sliderBar.AbsolutePosition.X
-        local barW = sliderBar.AbsoluteSize.X
-        local percent = math.clamp((mouseX - barX) / barW, 0, 1)
-        sliderKnob.Position = UDim2.new(percent, -10, 0, 0)
-        
-        local delay = math.floor(((0.1 + (0.9 * percent)) * 100 + 0.5)) / 100
-        getgenv().RepFarmDelay = delay
-        sliderLabel.Text = "Delay: " .. tostring(delay) .. "s"
-    end
+creditTabBtn.MouseButton1Click:Connect(function()
+	showTab(creditTab)
 end)
